@@ -52,8 +52,6 @@
         dontBuild = true;
         installPhase = ''
           mkdir -p "$out/typst/packages"
-          echo $src
-          false
           cp -LR --reflink=auto --no-preserve=mode -t "$out/typst/packages" "$src"/*
         '';
       };
