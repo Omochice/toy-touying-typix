@@ -11,8 +11,8 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
-    toying = {
-      url = "github:loqusion/typix";
+    typst-packages = {
+      url = "github:typst/packages";
       flake = false;
     };
 
@@ -36,6 +36,28 @@
       typixLib = typix.lib.${system};
 
       src = typixLib.cleanTypstSource ./.;
+      # Watch a project and recompile on changes
+      watch-script = typixLib.watchTypstProject commonArgs;
+
+      typstPackagesSrc = pkgs.symlinkJoin {
+        name = "typst-packages-src";
+        paths = [
+          "${inputs.typst-packages}/packages"
+        ];
+      };
+
+      typstPackagesCache = pkgs.stdenv.mkDerivation {
+        name = "typst-packages-cache";
+        src = typstPackagesSrc;
+        dontBuild = true;
+        installPhase = ''
+          mkdir -p "$out/typst/packages"
+          echo $src
+          false
+          cp -LR --reflink=auto --no-preserve=mode -t "$out/typst/packages" "$src"/*
+        '';
+      };
+
       commonArgs = {
         typstSource = "main.typ";
 
@@ -43,6 +65,10 @@
           # Add paths to fonts here
           # "${pkgs.roboto}/share/fonts/truetype"
         ];
+
+        typstOpts = {
+          package-path = typstPackagesCache;
+        };
 
         virtualPaths = [
           # Add paths that must be locally accessible to typst here
@@ -67,43 +93,9 @@
           inherit src;
         });
 
-      # Watch a project and recompile on changes
-      watch-script = typixLib.watchTypstProject commonArgs;
-
-      typstPackagesSrc = pkgs.symlinkJoin {
-        name = "typst-packages-src";
-        paths = [
-          "${inputs.touying}/..."
-        ];
-      };
-
-      typstPackagesCache = pkgs.stdenv.mkDerivation {
-        name = "typst-packages-cache";
-        src = typstPackagesSrc;
-        dontBuild = true;
-        installPhase = ''
-          mkdir -p "$out/typst/packages"
-          cp -LR --reflink=auto --no-preserve=mode -t "$out/typst/packages" "$src"/*
-          '';
-        shellHook = ''
-          export TYPST_PACKAGE_CACHE_PATH="$out/typst"
-        '';
-      };
     in {
       checks = {
         inherit build-drv build-script watch-script;
-      };
-      build-drv = typixLib.buildTypstProject {
-        XDG_CACHE_HOME = typstPackagesCache;
-        shellHook = ''
-          export TYPST_PACKAGE_CACHE_PATH="$out/typst"
-        '';
-# ...
-      };
-
-      build-script = typixLib.buildTypstProjectLocal {
-        XDG_CACHE_HOME = typstPackagesCache;
-# ...
       };
 
       packages.default = build-drv;
