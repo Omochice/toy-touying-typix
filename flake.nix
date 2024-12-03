@@ -51,8 +51,8 @@
         src = typstPackagesSrc;
         dontBuild = true;
         installPhase = ''
-          mkdir -p "$out/typst/packages"
-          cp -LR --reflink=auto --no-preserve=mode -t "$out/typst/packages" "$src"/*
+          mkdir -p "$out"
+          cp -LR --reflink=auto --no-preserve=mode -t "$out" "$src"/*
         '';
       };
 
