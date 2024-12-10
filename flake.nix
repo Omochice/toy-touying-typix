@@ -3,25 +3,16 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     typix = {
       url = "github:loqusion/typix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     flake-utils.url = "github:numtide/flake-utils";
-
     typst-packages = {
       url = "github:typst/packages";
       flake = false;
     };
-
     treefmt-nix.url = "github:numtide/treefmt-nix";
-    # Example of downloading icons from a non-flake source
-    # font-awesome = {
-    #   url = "github:FortAwesome/Font-Awesome";
-    #   flake = false;
-    # };
   };
 
   outputs =
@@ -63,16 +54,13 @@
 
         commonArgs = {
           typstSource = "main.typ";
-
           fontPaths = [
             "${pkgs.udev-gothic}/share/fonts/udev-gothic"
           ];
-
           typstOpts = {
             package-path = typstPackagesCache;
             ignore-system-fonts = true;
           };
-
           virtualPaths = [
             # Add paths that must be locally accessible to typst here
             # {
