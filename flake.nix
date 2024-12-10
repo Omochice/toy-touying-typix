@@ -65,12 +65,12 @@
           typstSource = "main.typ";
 
           fontPaths = [
-            # Add paths to fonts here
-            # "${pkgs.roboto}/share/fonts/truetype"
+            "${pkgs.udev-gothic}/share/fonts/udev-gothic"
           ];
 
           typstOpts = {
             package-path = typstPackagesCache;
+            ignore-system-fonts = true;
           };
 
           virtualPaths = [

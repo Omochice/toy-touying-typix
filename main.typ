@@ -12,3 +12,7 @@ Hello, Touying!
 #pause
 
 Hello, Typst!
+
+#pause
+
+こんにちは、Typst!
